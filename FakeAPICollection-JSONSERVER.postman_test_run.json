@@ -1,0 +1,272 @@
+{
+	"info": {
+		"_postman_id": "ca2b9ccb-074e-4cf6-9435-dba97290d9e0",
+		"name": "FakeAPICollection-JSONSERVER",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20670514"
+	},
+	"item": [
+		{
+			"name": "POST-CreateUser",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"jsonData = JSON.parse(responseBody)\r",
+							"value = jsonData.id\r",
+							"pm.environment.set(\"idNumber\", value);\r",
+							"valueName = jsonData.name\r",
+							"pm.environment.set(\"Name\", valueName);\r",
+							"pm.test(\"Status code is 201 - Successful POST- Create user request\", () => {\r",
+							"  pm.expect(pm.response.code).to.eql(201);\r",
+							"});\r",
+							"pm.test(\"Response time is less than 200ms\", () => {\r",
+							"  pm.expect(pm.response.responseTime).to.be.below(200);\r",
+							"});\r",
+							"pm.test(\"POST - Successful verification on the repsonse body by the name  - \"+valueName+\".\", () => {\r",
+							"  pm.expect(jsonData.name).to.eql(valueName);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"testbody\",\r\n    \"location\": \"PTC\",\r\n    \"phone\": \"418520963\",\r\n    \"courses\": [\r\n        \"Java\",\r\n        \"Python\"\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET-SearchUser",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var responsebody = JSON.parse(responseBody);\r",
+							"var IdNumber = pm.environment.get(\"idNumber\");\r",
+							"var NameUser = pm.environment.get(\"Name\");\r",
+							"tests[\"Validating the Response Body - with ID-\"+IdNumber+\".\"] = responsebody.id == IdNumber;\r",
+							"tests[\"Validating the Response Body - with NAME-\"+NameUser+\".\"] = responsebody.name == NameUser;\r",
+							"pm.test(\"Status code is 200 - Successful GET - Search user request\", () => {\r",
+							"  pm.expect(pm.response.code).to.eql(200);\r",
+							"});\r",
+							"pm.test(\"GET - Successful verification on the repsonse body by the name  - \"+NameUser+\".\", () => {\r",
+							"  pm.expect(responsebody.name).to.eql(NameUser);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/users/{{idNumber}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"users",
+						"{{idNumber}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET-SearchAllUsers",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var responsebody = JSON.parse(responseBody);\r",
+							"RecentAddedId = responsebody[responsebody.length-1].id\r",
+							"var Id = pm.environment.get(\"idNumber\");\r",
+							"pm.test(\"Status code is 200 - Successful GET-Search All users request\", () => {\r",
+							"  pm.expect(pm.response.code).to.eql(200);\r",
+							"});\r",
+							"pm.test(\"GET - Successful verification on the most recent added user ID - \"+Id+\".\", () => {\r",
+							"  pm.expect(RecentAddedId).to.eql(Id);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/users",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT-UpdateUser",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"RequestBody = pm.request.body.raw\r",
+							"var reqbody = JSON.parse(RequestBody);\r",
+							"randomReqName = reqbody.name\r",
+							"var responsebody = JSON.parse(responseBody);\r",
+							"randomRespName = responsebody.name\r",
+							"tests[\"Validating the Request body random name with Response body name-\"+randomReqName+\".\"] = randomReqName == randomRespName;\r",
+							"pm.test(\"PUT - Successful verification on the repsonse body by the updated name  - \"+randomReqName+\".\", () => {\r",
+							"  pm.expect(randomReqName).to.eql(randomRespName);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"{{$randomUserName}}\",\r\n    \"location\": \"PTC\",\r\n    \"phone\": \"111111111\",\r\n    \"courses\": [\r\n        \"Java\",\r\n        \"Python\"\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/users/{{idNumber}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"users",
+						"{{idNumber}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE-UserDelete",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/Customer?CustomerId=21",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"Customer"
+					],
+					"query": [
+						{
+							"key": "CustomerId",
+							"value": "21"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"postman.setGlobalVariable('urlName','http://localhost:3000');",
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "",
+			"type": "string",
+			"disabled": true
+		},
+		{
+			"key": "idNumber",
+			"value": "",
+			"type": "string",
+			"disabled": true
+		},
+		{
+			"key": "Name",
+			"value": "",
+			"type": "string",
+			"disabled": true
+		}
+	]
+}
